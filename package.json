@@ -21,6 +21,7 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
+  "proxy": "https://hospitalemcor.com.br/novo",
   "eslintConfig": {
     "extends": [
       "react-app",
@@ -39,4 +40,5 @@
       "last 1 safari version"
     ]
   }
+
 }

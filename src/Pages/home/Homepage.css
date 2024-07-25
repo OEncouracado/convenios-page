@@ -1,0 +1,33 @@
+.ambulatorio-table,
+.pronto-socorro-table {
+    background-color: #ffffff;
+    /* Branco */
+    border-color: #000000;
+    /* Cor da borda */
+}
+
+.ambulatorio-table thead,
+.pronto-socorro-table thead {
+    background-color: #f36867;
+    /* Cor do cabeçalho */
+    color: white;
+    /* Texto branco */
+}
+
+.ambulatorio-table tbody tr:nth-of-type(odd),
+.pronto-socorro-table tbody tr:nth-of-type(odd) {
+    background-color: #e8926d;
+    /* Alterna cores de fundo para as linhas */
+}
+
+.ambulatorio-table tbody tr:nth-of-type(even),
+.pronto-socorro-table tbody tr:nth-of-type(even) {
+    background-color: #f7826c;
+    /* Alterna cores de fundo para as linhas */
+}
+
+.table th,
+.table td {
+    text-align: center;
+    /* Alinha o texto ao centro */
+}
