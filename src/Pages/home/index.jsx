@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Col, Container, Row, Alert, Form, Table } from "react-bootstrap";
-import './Homepage.css'; // Importe o arquivo CSS para os estilos personalizados
+import "./Homepage.css"; // Importe o arquivo CSS para os estilos personalizados
 
 function Homepage() {
   const [convenios, setConvenios] = useState([]);
@@ -14,16 +14,16 @@ function Homepage() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const conveniosResponse = await axios.get("/wp-json/wp/v2/convenios", {
-          params: {
-            limit: 100, // Ajuste conforme necessário
-            page: 1
-          }
-        });
-        console.log('convenios :>> ', conveniosResponse.data);
+        const conveniosResponse = await axios.get(
+          "/wp-json/wp/v2/convenios?per_page=100"
+        );
+        console.log("convenios :>> ", conveniosResponse.data);
         setConvenios(conveniosResponse.data);
 
-        const planosResponse = await axios.get("/wp-json/wp/v2/planos");
+        const planosResponse = await axios.get(
+          "/wp-json/wp/v2/planos?per_page=100"
+        );
+        console.log("planos :>> ", planosResponse.data);
         setPlanos(planosResponse.data);
       } catch (error) {
         setError(`Failed to fetch data: ${error.message}`);
@@ -38,7 +38,9 @@ function Homepage() {
     setSelectedConvenio(selectedId);
 
     const filtered = planos.filter((plano) => {
-      return plano.acf.convenio && plano.acf.convenio.includes(parseInt(selectedId));
+      return (
+        plano.acf.convenio && plano.acf.convenio.includes(parseInt(selectedId))
+      );
     });
 
     setFilteredPlanos(filtered);
@@ -117,38 +119,85 @@ function Homepage() {
               <tbody>
                 <tr>
                   <td rowSpan="3">Consulta Especialidades</td>
-                  <td className={`text-white ${selectedPlano.acf.cobertura.ambulatorio.consulta_especialidades.angiologia ? "bg-success" : "bg-danger"}`}>
+                  <td
+                    className={`text-white ${
+                      selectedPlano.acf.cobertura.ambulatorio
+                        .consulta_especialidades.angiologia
+                        ? "bg-success"
+                        : "bg-danger"
+                    }`}
+                  >
                     <p className="m-0 p-0 ">Angiologia</p>
                   </td>
                 </tr>
                 <tr>
-                  <td className={`text-white ${selectedPlano.acf.cobertura.ambulatorio.consulta_especialidades.cardiologia ? "bg-success" : "bg-danger"}`}>
+                  <td
+                    className={`text-white ${
+                      selectedPlano.acf.cobertura.ambulatorio
+                        .consulta_especialidades.cardiologia
+                        ? "bg-success"
+                        : "bg-danger"
+                    }`}
+                  >
                     <p className="m-0 p-0 ">Cardiologia</p>
                   </td>
                 </tr>
                 <tr>
-                  <td className={`text-white ${selectedPlano.acf.cobertura.ambulatorio.consulta_especialidades.nutricionista ? "bg-success" : "bg-danger"}`}>
+                  <td
+                    className={`text-white ${
+                      selectedPlano.acf.cobertura.ambulatorio
+                        .consulta_especialidades.nutricionista
+                        ? "bg-success"
+                        : "bg-danger"
+                    }`}
+                  >
                     <p className="m-0 p-0 ">Nutricionista</p>
                   </td>
                 </tr>
                 <tr>
                   <td rowSpan="4">Exames</td>
-                  <td className={`text-white ${selectedPlano.acf.cobertura.ambulatorio.exames.eletrocardiograma ? "bg-success" : "bg-danger"}`}>
+                  <td
+                    className={`text-white ${
+                      selectedPlano.acf.cobertura.ambulatorio.exames
+                        .eletrocardiograma
+                        ? "bg-success"
+                        : "bg-danger"
+                    }`}
+                  >
                     <p className="m-0 p-0 ">Eletrocardiograma</p>
                   </td>
                 </tr>
                 <tr>
-                  <td className={`text-white ${selectedPlano.acf.cobertura.ambulatorio.exames.holter ? "bg-success" : "bg-danger"}`}>
+                  <td
+                    className={`text-white ${
+                      selectedPlano.acf.cobertura.ambulatorio.exames.holter
+                        ? "bg-success"
+                        : "bg-danger"
+                    }`}
+                  >
                     <p className="m-0 p-0 ">Holter</p>
                   </td>
                 </tr>
                 <tr>
-                  <td className={`text-white ${selectedPlano.acf.cobertura.ambulatorio.exames.mapa ? "bg-success" : "bg-danger"}`}>
+                  <td
+                    className={`text-white ${
+                      selectedPlano.acf.cobertura.ambulatorio.exames.mapa
+                        ? "bg-success"
+                        : "bg-danger"
+                    }`}
+                  >
                     <p className="m-0 p-0 ">MAPA</p>
                   </td>
                 </tr>
                 <tr>
-                  <td className={`text-white ${selectedPlano.acf.cobertura.ambulatorio.exames.teste_ergometrico ? "bg-success" : "bg-danger"}`}>
+                  <td
+                    className={`text-white ${
+                      selectedPlano.acf.cobertura.ambulatorio.exames
+                        .teste_ergometrico
+                        ? "bg-success"
+                        : "bg-danger"
+                    }`}
+                  >
                     <p className="m-0 p-0 ">Teste Ergométrico</p>
                   </td>
                 </tr>
@@ -166,27 +215,59 @@ function Homepage() {
               <tbody>
                 <tr>
                   <td rowSpan="5">Pronto Socorro</td>
-                  <td className={`text-white ${selectedPlano.acf.cobertura.pronto_socorro.consulta ? "bg-success" : "bg-danger"}`}>
+                  <td
+                    className={`text-white ${
+                      selectedPlano.acf.cobertura.pronto_socorro.consulta
+                        ? "bg-success"
+                        : "bg-danger"
+                    }`}
+                  >
                     <p className="m-0 p-0 ">Consulta</p>
                   </td>
                 </tr>
                 <tr>
-                  <td className={`text-white ${selectedPlano.acf.cobertura.pronto_socorro.exames_de_imagem ? "bg-success" : "bg-danger"}`}>
+                  <td
+                    className={`text-white ${
+                      selectedPlano.acf.cobertura.pronto_socorro
+                        .exames_de_imagem
+                        ? "bg-success"
+                        : "bg-danger"
+                    }`}
+                  >
                     <p className="m-0 p-0 ">Exames de Imagem</p>
                   </td>
                 </tr>
                 <tr>
-                  <td className={`text-white ${selectedPlano.acf.cobertura.pronto_socorro.exames_laboratoriais ? "bg-success" : "bg-danger"}`}>
+                  <td
+                    className={`text-white ${
+                      selectedPlano.acf.cobertura.pronto_socorro
+                        .exames_laboratoriais
+                        ? "bg-success"
+                        : "bg-danger"
+                    }`}
+                  >
                     <p className="m-0 p-0 ">Exames Laboratoriais</p>
                   </td>
                 </tr>
                 <tr>
-                  <td className={`text-white ${selectedPlano.acf.cobertura.pronto_socorro.internacao ? "bg-success" : "bg-danger"}`}>
+                  <td
+                    className={`text-white ${
+                      selectedPlano.acf.cobertura.pronto_socorro.internacao
+                        ? "bg-success"
+                        : "bg-danger"
+                    }`}
+                  >
                     <p className="m-0 p-0 ">Internação</p>
                   </td>
                 </tr>
                 <tr>
-                  <td className={`text-white ${selectedPlano.acf.cobertura.pronto_socorro.medicacao ? "bg-success" : "bg-danger"}`}>
+                  <td
+                    className={`text-white ${
+                      selectedPlano.acf.cobertura.pronto_socorro.medicacao
+                        ? "bg-success"
+                        : "bg-danger"
+                    }`}
+                  >
                     <p className="m-0 p-0 ">Medicação</p>
                   </td>
                 </tr>
@@ -198,8 +279,8 @@ function Homepage() {
       <Container className="mt-5">
         <footer>
           <Alert variant="info">
-            Para maiores detalhes favor acionar a nossa Central de Atendimento no (21) 3759-8901 ou pelo
-            e-mail:{" "}
+            Para maiores detalhes favor acionar a nossa Central de Atendimento
+            no (21) 3759-8901 ou pelo e-mail:{" "}
             <a href="mailto:atendimento@hospitalemcor.com.br">
               {" "}
               atendimento@hospitalemcor.com.br
