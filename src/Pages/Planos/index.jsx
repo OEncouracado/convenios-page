@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Table, Button, Form, Spinner, Alert, Container } from 'react-bootstrap';
+import { Table, Button, Form, Spinner, Alert } from 'react-bootstrap';
 
 const PlanosPage = () => {
     const [planos, setPlanos] = useState([]);
@@ -9,6 +9,35 @@ const PlanosPage = () => {
     const [editMode, setEditMode] = useState(false);
     const [editedPlanos, setEditedPlanos] = useState({});
     const [newConvenio, setNewConvenio] = useState('');
+
+    // Função para obter o token JWT
+    const getJwtToken = async () => {
+        const response = await axios.post('/wp-json/jwt-auth/v1/token', {
+            username: 'emcor',
+            password: 'Emcor@@2024'
+        });
+        return response.data.token;
+    };
+
+    // Adicione um interceptor para incluir o token JWT em todas as requisições
+    axios.interceptors.request.use(async config => {
+        const token = localStorage.getItem('jwtToken');
+        if (token) {
+            config.headers.Authorization = `Bearer ${token}`;
+        }
+        return config;
+    }, error => {
+        return Promise.reject(error);
+    });
+
+    // Quando iniciar a aplicação, obtenha e armazene o token JWT
+    useEffect(() => {
+        const initialize = async () => {
+            const token = await getJwtToken();
+            localStorage.setItem('jwtToken', token);
+        };
+        initialize();
+    }, []);
 
     useEffect(() => {
         const fetchAllData = async (endpoint, setter) => {
@@ -49,7 +78,11 @@ const PlanosPage = () => {
     const handleSaveChanges = async () => {
         try {
             await Promise.all(Object.keys(editedPlanos).map(id =>
-                axios.post(`/wp-json/wp/v2/planos/${id}`, editedPlanos[id])
+                axios.post(`/wp-json/wp/v2/planos/${id}`, editedPlanos[id], {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`
+                    }
+                })
             ));
             setPlanos(prev => prev.map(plan =>
                 editedPlanos[plan.id] ? { ...plan, ...editedPlanos[plan.id] } : plan
@@ -79,6 +112,19 @@ const PlanosPage = () => {
         });
     };
 
+    const handleDelete = async (id) => {
+        try {
+            await axios.delete(`/wp-json/wp/v2/planos/${id}`, {
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`
+                }
+            });
+            setPlanos(prev => prev.filter(plan => plan.id !== id));
+        } catch (error) {
+            setError(`Failed to delete plan: ${error.message}`);
+        }
+    };
+
     const renderBooleanField = (id, field, value) => (
         <Form.Check
             type="checkbox"
@@ -88,7 +134,7 @@ const PlanosPage = () => {
     );
 
     return (
-        <Container className="mt-4 mx-0">
+        <div className="container mt-4">
             {loading ? (
                 <Spinner animation="border" />
             ) : error ? (
@@ -178,57 +224,39 @@ const PlanosPage = () => {
                                         )}
                                     </td>
                                     <td>
-                                        {Object.entries(plan.acf.cobertura.ambulatorio.consulta_especialidades).map(([key, value]) => (
-                                            <div key={key}>
-                                                <Form.Label>{key}</Form.Label>
-                                                {renderBooleanField(plan.id, `acf.cobertura.ambulatorio.consulta_especialidades.${key}`, value)}
-                                            </div>
-                                        ))}
-                                    </td>
-                                    <td>
-                                        {Object.entries(plan.acf.cobertura.ambulatorio.exames).map(([key, value]) => (
-                                            <div key={key}>
-                                                <Form.Label>{key}</Form.Label>
-                                                {renderBooleanField(plan.id, `acf.cobertura.ambulatorio.exames.${key}`, value)}
-                                            </div>
-                                        ))}
-                                    </td>
-                                    <td>
-                                        {Object.entries(plan.acf.cobertura.pronto_socorro).map(([key, value]) => (
-                                            <div key={key}>
-                                                <Form.Label>{key}</Form.Label>
-                                                {renderBooleanField(plan.id, `acf.cobertura.pronto_socorro.${key}`, value)}
-                                            </div>
-                                        ))}
-                                    </td>
-                                    <td>
-                                        {editMode ? (
-                                            <Form.Control
-                                                type="text"
-                                                value={editedPlanos[plan.id]?.acf?.convenio || plan.acf.convenio}
-                                                onChange={e => handleEditChange(plan.id, 'acf.convenio', e.target.value)}
-                                            />
-                                        ) : (
-                                            plan.acf.convenio
-                                        )}
-                                    </td>
-                                    {editMode && (
-                                        <td>
-                                            <Button
-                                                variant="danger"
-                                                onClick={() => handleEditChange(plan.id, 'deleted', true)}
-                                            >
-                                                Delete
-                                            </Button>
-                                        </td>
-                                    )}
-                                </tr>
-                            ))}
+                                      {renderBooleanField(plan.id, 'acf.ambulatorio_consultas', plan.acf.ambulatorio.consultas)}
+                                  </td>
+                                  <td>
+                                      {renderBooleanField(plan.id, 'acf.ambulatorio_exames', plan.acf.ambulatorio.exames)}
+                                  </td>
+                                  <td>
+                                      {renderBooleanField(plan.id, 'acf.pronto_socorro', plan.acf.pronto_socorro)}
+                                  </td>
+                                  <td>
+                                      {editMode ? (
+                                          <Form.Control
+                                              type="text"
+                                              value={editedPlanos[plan.id]?.acf?.convenio || plan.acf.convenio}
+                                              onChange={e => handleEditChange(plan.id, 'acf.convenio', e.target.value)}
+                                          />
+                                      ) : (
+                                          plan.acf.convenio
+                                      )}
+                                  </td>
+                                  {editMode && (
+                                      <td>
+                                          <Button variant="danger" onClick={() => handleDelete(plan.id)}>
+                                              Delete
+                                          </Button>
+                                      </td>
+                                  )}
+                              </tr>
+                          ))}
                         </tbody>
                     </Table>
                 </>
             )}
-        </Container>
+        </div>
     );
 };
 

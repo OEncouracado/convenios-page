@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Col, Container, Row, Alert, Form, Table } from "react-bootstrap";
 import "./Homepage.css"; // Importe o arquivo CSS para os estilos personalizados
+import { Link } from "react-router-dom";
 
 function Homepage() {
   const [convenios, setConvenios] = useState([]);
@@ -280,17 +281,20 @@ function Homepage() {
         </Container>
       )}
       <Container className="mt-5">
-        <footer>
-          <Alert variant="info">
-            Para maiores detalhes favor acionar a nossa Central de Atendimento
-            no (21) 3759-8901 ou pelo e-mail:{" "}
-            <a href="mailto:atendimento@hospitalemcor.com.br">
-              {" "}
-              atendimento@hospitalemcor.com.br
-            </a>
-            .
-          </Alert>
-        </footer>
+        <Row>
+          <Col md >
+            <footer>
+              <Alert variant="info" className="p-0">
+                Para mais detalhes, por favor, entre em contato com a nossa Central de Atendimento pelo telefone (21) 3759-8901 ou pelo e-mail:{" "}
+                <Link to="mailto:atendimento@hospitalemcor.com.br">
+                  {" "}
+                  atendimento@hospitalemcor.com.br
+                </Link>
+                .
+              </Alert>
+            </footer>
+          </Col>
+        </Row>
       </Container>
     </Container>
   );
