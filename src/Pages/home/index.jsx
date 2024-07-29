@@ -12,19 +12,22 @@ function Homepage() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    const fetchAllData = async (endpoint, setter) => {
+      let page = 1;
+      let allData = [];
+      let fetchData;
+      do {
+        fetchData = await axios.get(`/wp-json/wp/v2/${endpoint}?per_page=100&page=${page}`);
+        allData = [...allData, ...fetchData.data];
+        page++;
+      } while (fetchData.data.length === 100);
+      setter(allData);
+    };
+
     const fetchData = async () => {
       try {
-        const conveniosResponse = await axios.get(
-          "/wp-json/wp/v2/convenios?per_page=100"
-        );
-        console.log("convenios :>> ", conveniosResponse.data);
-        setConvenios(conveniosResponse.data);
-
-        const planosResponse = await axios.get(
-          "/wp-json/wp/v2/planos?per_page=100"
-        );
-        console.log("planos :>> ", planosResponse.data);
-        setPlanos(planosResponse.data);
+        await fetchAllData('convenios', setConvenios);
+        await fetchAllData('planos', setPlanos);
       } catch (error) {
         setError(`Failed to fetch data: ${error.message}`);
       }
