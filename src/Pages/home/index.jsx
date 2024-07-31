@@ -19,7 +19,7 @@ function Homepage() {
       let allData = [];
       let fetchData;
       do {
-        fetchData = await axios.get(`/wp-json/wp/v2/${endpoint}?per_page=100&page=${page}`);
+        fetchData = await axios.get(`https://hospitalemcor.com.br/novo/wp-json/wp/v2/${endpoint}?per_page=100&page=${page}`);
         allData = [...allData, ...fetchData.data];
         page++;
       } while (fetchData.data.length === 100);
